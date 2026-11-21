@@ -3,39 +3,64 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "llm-rosetta-shim-free"
+name = "llm-rosetta-shim-contrib"
 dynamic = ["version"]
-description = "Keyless free LLM endpoint shims (Kilo, LLM7, OpenCode Zen, OVHcloud) for llm-rosetta, delivered as a plugin package"
+description = "Community and third-party vendor shims for llm-rosetta: free endpoints, subscription and sign-in lanes, aggregators"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
 authors = [{ name = "Oaklight" }]
-keywords = ["llm", "llm-rosetta", "shim", "free", "keyless", "kilo", "llm7", "opencode", "ovhcloud"]
+keywords = ["llm", "llm-rosetta", "shim", "contrib", "free", "aggregator", "subscription", "kilo", "llm7", "opencode", "ovhcloud", "opendesign", "openrouter", "chatgpt"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "License :: OSI Approved :: MIT License",
 ]
-# ``connection.session_id_format`` / ``request_id_format`` and the free-source
-# metadata land in 0.14; an older core ignores them, so the floor is what makes
-# the minted identifiers actually follow OpenCode's layout.
-dependencies = ["llm-rosetta>=0.14.0.dev0"]
+# 0.14.0.dev35 is the first core with ``llm_rosetta.contracts``, the only core
+# surface this package imports.  The published manifest gates gateways the
+# same way, through ``requires: {surface, ir}``.
+dependencies = ["llm-rosetta>=0.14.0.dev35"]
 
 [project.urls]
-Repository = "https://github.com/Oaklight/llm-rosetta-shim-free"
+Repository = "https://github.com/Oaklight/llm-rosetta-shim-contrib"
 Upstream = "https://github.com/Oaklight/llm-rosetta"
 
+# One entry point per vendor directory, named after it.  Core calls each one
+# inside its own try, so a vendor that fails to load does not stop the others.
+# tests/test_layout.py fails when this table and providers/ disagree.
 [project.entry-points."llm_rosetta.shim_providers"]
-free = "llm_rosetta_shim_free:register_shims"
+antigravity = "llm_rosetta_shim_contrib.vendors:antigravity"
+groq = "llm_rosetta_shim_contrib.vendors:groq"
+kilo = "llm_rosetta_shim_contrib.vendors:kilo"
+kilo_free = "llm_rosetta_shim_contrib.vendors:kilo_free"
+llm7 = "llm_rosetta_shim_contrib.vendors:llm7"
+modelscope = "llm_rosetta_shim_contrib.vendors:modelscope"
+moonshot = "llm_rosetta_shim_contrib.vendors:moonshot"
+nvidia = "llm_rosetta_shim_contrib.vendors:nvidia"
+openai_chatgpt = "llm_rosetta_shim_contrib.vendors:openai_chatgpt"
+opencode = "llm_rosetta_shim_contrib.vendors:opencode"
+opencode_zen_free = "llm_rosetta_shim_contrib.vendors:opencode_zen_free"
+opendesign = "llm_rosetta_shim_contrib.vendors:opendesign"
+openrouter = "llm_rosetta_shim_contrib.vendors:openrouter"
+ovhcloud = "llm_rosetta_shim_contrib.vendors:ovhcloud"
+qwen = "llm_rosetta_shim_contrib.vendors:qwen"
+siliconflow = "llm_rosetta_shim_contrib.vendors:siliconflow"
+volcengine = "llm_rosetta_shim_contrib.vendors:volcengine"
+xai = "llm_rosetta_shim_contrib.vendors:xai"
+zai = "llm_rosetta_shim_contrib.vendors:zai"
+zhipu = "llm_rosetta_shim_contrib.vendors:zhipu"
 
 [tool.setuptools.dynamic]
-version = { attr = "llm_rosetta_shim_free.__version__" }
+version = { attr = "llm_rosetta_shim_contrib.__version__" }
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-llm_rosetta_shim_free = ["providers/**/*.yaml", "providers/**/*.py"]
+llm_rosetta_shim_contrib = ["providers/**/*.yaml", "providers/**/*.py", "providers/**/*.md"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+# Each vendor keeps its tests under tests/<vendor>/, and two vendors may use the
+# same module name (test_registration.py); importlib mode keeps them apart.
+addopts = "--import-mode=importlib"

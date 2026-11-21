@@ -1,0 +1,83 @@
+version: 1
+# 0.14.0.dev35 is the first core with llm_rosetta.contracts, the only core
+# surface this package imports.  The gateway compares the first three numeric
+# components, so a 0.14.0 development core satisfies this floor.
+#
+# This file lists every shim the package ships, for a gateway source that
+# loads the whole tree.  A release archive carries one vendor and a copy of
+# this file cut to that vendor's entries (scripts/build_shim_archive.py), and
+# the build fails when this list and the vendor's leaves disagree.
+core: ">=0.14.0"
+shims:
+  - name: antigravity--acp
+    path: antigravity/llm/acp
+  - name: groq--chat_completions
+    path: groq/llm
+  - name: kilo--chat_completions
+    path: kilo/llm
+  - name: kilo_free--chat_completions
+    path: kilo_free/llm
+  - name: llm7--chat_completions
+    path: llm7/llm
+  - name: modelscope--chat_completions
+    path: modelscope/llm
+  - name: moonshot
+    path: moonshot/llm
+  - name: nvidia--chat_completions
+    path: nvidia/llm
+  - name: openai_chatgpt--open_responses
+    path: openai_chatgpt/llm
+  - name: opencode--chat_completions
+    path: opencode/llm/chat_completions
+  - name: opencode--messages
+    path: opencode/llm/messages
+  - name: opencode--open_responses
+    path: opencode/llm/open_responses
+  - name: opencode_zen_free--chat_completions
+    path: opencode_zen_free/llm
+  - name: opendesign--chat_completions
+    path: opendesign/llm/chat_completions
+  - name: opendesign--messages
+    path: opendesign/llm/messages
+  - name: opendesign--open_responses
+    path: opendesign/llm/open_responses
+  - name: openrouter--chat_completions
+    path: openrouter/llm/chat_completions
+  - name: openrouter--messages
+    path: openrouter/llm/messages
+  - name: openrouter--open_responses
+    path: openrouter/llm/open_responses
+  - name: openrouter--rerank
+    path: openrouter/rerank
+  - name: ovhcloud--chat_completions
+    path: ovhcloud/llm
+  - name: qwen
+    path: qwen/llm
+  - name: siliconflow--embedding
+    path: siliconflow/embeddings
+  - name: siliconflow--chat_completions
+    path: siliconflow/llm
+  - name: siliconflow--rerank
+    path: siliconflow/rerank
+  - name: volcengine--embedding
+    path: volcengine/embeddings
+  - name: volcengine--chat_completions
+    path: volcengine/llm/chat_completions
+  - name: volcengine--open_responses
+    path: volcengine/llm/open_responses
+  - name: xai
+    path: xai/llm
+  - name: zai--embedding
+    path: zai/embeddings
+  - name: zai--chat_completions
+    path: zai/llm/chat_completions
+  - name: zai--messages
+    path: zai/llm/messages
+  - name: zai--rerank
+    path: zai/rerank
+  - name: zhipu--embedding
+    path: zhipu/embeddings
+  - name: zhipu
+    path: zhipu/llm
+  - name: zhipu--rerank
+    path: zhipu/rerank

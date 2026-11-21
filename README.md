@@ -1,154 +1,162 @@
-# llm-rosetta-shim-free
+# llm-rosetta-shim-contrib
 
-Keyless free LLM endpoints for [llm-rosetta](https://github.com/Oaklight/llm-rosetta),
-delivered as a plugin package. Every shim here serves a free pool that needs no
-account:
+Vendor shims for [llm-rosetta](https://github.com/Oaklight/llm-rosetta) that do not ship with core: free endpoints, sign-in and subscription lanes, aggregators, and new vendors on their way to core. One directory per vendor, each published as its own versioned archive through one manifest, so a gateway installs only the vendors it selects and only versions its core can load.
 
-| Shim | Vendor | Default Base URL | Credential |
-|:---|:---|:---|:---|
-| `kilo_free--chat_completions` | Kilo Code | `https://api.kilo.ai/api/gateway` | none (keyless) |
-| `llm7--chat_completions` | LLM7.io | `https://api.llm7.io/v1` | none (keyless) |
-| `opencode_zen_free--chat_completions` | OpenCode (Zen) | `https://opencode.ai/zen/v1` | none (keyless) |
-| `ovhcloud--chat_completions` | OVHcloud AI Endpoints | `https://oai.endpoints.kepler.ai.cloud.ovh.net/v1` | none (keyless) |
+This repository was `llm-rosetta-shim-free` (renamed 2026-11-21; history, issues and redirects kept). `llm-rosetta-shim-opendesign` was merged into it with its history. The plan is Oaklight/llm-rosetta#1660.
 
-All four are OpenAI Chat Completions lanes.
+## Vendors
 
-This repository was `llm-rosetta-shim-opencode-free` and shipped only the
-OpenCode Zen lane. It was renamed when the other keyless pools joined it. The
-OpenCode shim's name did not change, so a config written for the old package
-keeps working after its preset declaration is switched to `free`.
+| Vendor | Shims | Tags | Maturity | Notes |
+|:---|:---|:---|:---|:---|
+| `kilo_free` | `kilo_free--chat_completions` | `tier:free` | beta | [free tier](docs/vendors/free-tier.md) |
+| `llm7` | `llm7--chat_completions` | `tier:free` | beta | [free tier](docs/vendors/free-tier.md) |
+| `opencode_zen_free` | `opencode_zen_free--chat_completions` | `tier:free` | beta | [free tier](docs/vendors/free-tier.md) |
+| `ovhcloud` | `ovhcloud--chat_completions` | `tier:free` | beta | [free tier](docs/vendors/free-tier.md) |
+| `opendesign` | `opendesign--chat_completions`, `opendesign--open_responses`, `opendesign--messages` | `tier:subscription`, `auth:device` | beta | [Open Design Cloud](docs/vendors/opendesign.md) |
+| `opencode` | `opencode--chat_completions`, `opencode--messages`, `opencode--open_responses` | `tier:subscription`, `tier:paid` | beta | Go and Zen lanes; Go allowance probe `opencode_go` |
+| `openai_chatgpt` | `openai_chatgpt--open_responses` | `tier:subscription`, `auth:oauth` | beta | Sign in with ChatGPT; in-band probe `openai_codex` |
+| `antigravity` | `antigravity--acp` | `tier:subscription`, `auth:cli` | beta | drives the local `agy` CLI over ACP |
+| `kilo` | `kilo--chat_completions` | `tier:paid` | beta | aggregator (the keyless pool is `kilo_free`) |
+| `openrouter` | `openrouter--chat_completions`, `openrouter--messages`, `openrouter--open_responses`, `openrouter--rerank` | `tier:paid` | beta | aggregator |
+| `groq` | `groq--chat_completions` | `tier:paid` | beta | |
+| `nvidia` | `nvidia--chat_completions` | `tier:paid` | beta | NIM hosted endpoints |
+| `siliconflow` | `siliconflow--chat_completions`, `siliconflow--embedding`, `siliconflow--rerank` | `tier:paid`, `region:cn` | beta | |
+| `modelscope` | `modelscope--chat_completions` | `tier:paid`, `region:cn` | beta | |
+| `zai` | `zai--chat_completions`, `zai--messages`, `zai--embedding`, `zai--rerank` | `tier:paid` | stable | promotion candidate |
+| `volcengine` | `volcengine--chat_completions`, `volcengine--open_responses`, `volcengine--embedding` | `tier:paid`, `region:cn` | stable | promotion candidate |
+| `zhipu` | `zhipu`, `zhipu--embedding`, `zhipu--rerank` | `tier:paid`, `region:cn` | stable | promotion candidate; mainland region of `zai` |
+| `xai` | `xai` | `tier:paid` | stable | promotion candidate |
+| `qwen` | `qwen` | `tier:paid`, `region:cn` | stable | promotion candidate |
+| `moonshot` | `moonshot` | `tier:paid`, `region:cn` | stable | promotion candidate |
 
-## Where these come from — and what they are not
+The vendors from `opencode` down moved out of llm-rosetta core (Oaklight/llm-rosetta#1660 S7) with their shim names unchanged; `tier:paid` there means a keyed account, some with a free allowance. `zhipu`, `xai`, `qwen` and `moonshot` keep their bare chat shim names (a shim name is the vendor key or starts with `<vendor>--`).
 
-These endpoints are a **collection from public sources**, not original research.
-Some came from
-[**awesome-free-llm-apis**](https://github.com/mnfst/awesome-free-llm-apis), a
-community list of LLM APIs with permanent free tiers. Others were inspired by,
-or adapted from, other open-source projects that catalogue free endpoints or
-integrate with them. Credit for the discovery belongs to those projects and
-their authors; this repository only turns the result into shims, and every shim
-was probed directly before it was written.
+The free-tier vendors are third-party services collected from public sources. Read the disclaimer in [docs/vendors/free-tier.md](docs/vendors/free-tier.md) before you use them: nothing here guarantees data retention terms, and the upstream owns its terms and limits.
 
-Because the sources are mixed, this package is deliberately not the authority on
-any of them: check the upstream's own documentation for the current roster,
-limits and terms.
+## Where a shim lives: core or contrib
 
-**This is a collection, not an endorsement.** Neither this project nor its
-author is affiliated with, approved by, or partnered with any of these vendors,
-and nothing here should be read as a statement about their quality.
+A shim belongs in core only when both hold:
 
-**Use at your own risk.** In particular:
+1. It is the model maker's own API (not an aggregator, reseller or mirror).
+2. It authenticates with a static API key only: no `auth.py`. A `quota.py` is allowed when its probe uses only that key.
 
-- **Nothing here guarantees zero data retention.** Free tiers are exactly the
-  tiers most likely to retain prompts, log them for abuse review, or use them to
-  improve a product. If ZDR, residency, a DPA or a subprocessor list matters to
-  you, read that vendor's own terms and privacy policy and decide for yourself.
-  A shim saying `keyless` says nothing about what the upstream does with your
-  data.
-- **Terms, roster and rate limits belong to the upstream** and can change or
-  close without notice. A shim that worked yesterday may fail today; that is not
-  a defect in this package.
-- **The author holds no responsibility for any consequence** of using these
-  endpoints — data loss or disclosure, cost, account suspension, or a breach of
-  an upstream's terms.
-- **You are responsible for compliance** with the terms you accept, with the law
-  where you and your users are, and with any obligation you owe your own users.
+Everything else lives in contrib permanently: OAuth, device sign-in and subscription lanes, aggregators and free endpoints. Eligibility is necessary, not sufficient: a new or rarely used shim starts in contrib and is promoted when it is mature.
 
-If an upstream asks to be removed, its shim is withdrawn.
+Shim names do not depend on the location. `type: <vendor>--<format>` stays the same when a vendor moves between core and contrib, so a promotion or a demotion changes where the gateway installs it from, never a user's config. CI fails when a contrib shim name is also a core built-in (`scripts/check_core_collisions.py`).
 
-<details>
-<summary>中文说明</summary>
+## Maturity ladder
 
-本仓库收录的接口来自**公开渠道的汇总**，不是原创调研。其中一部分来自
-[**awesome-free-llm-apis**](https://github.com/mnfst/awesome-free-llm-apis) ——
-一个社区维护的「有永久免费额度的 LLM API」清单；另一部分参考或改编自其他开源项目
-（收录免费端点的清单类项目、以及集成这些端点的客户端项目）。发现的功劳属于这些项目
-及其作者，本仓库只把结果落成 shim，并在写入前逐条实测。
+| Stage | Where | Meaning |
+|:---|:---|:---|
+| `experimental` | contrib | New, or the upstream API is still changing; no stability promise |
+| `beta` | contrib | Has tests and one live verification; the shim may still change |
+| `stable` | contrib | Meets the promotion criteria; candidate for core |
+| core | core | Ships with core, under core's compatibility rules |
 
-正因为来源是混合的，本包不对任何一条做权威担保：模型清单、限额与条款以上游自己的文档为准。
+The stage is recorded per vendor in the manifest (`maturity`, `since`, and the last `conformance` result).
 
-**这里是收集，不是背书。** 本项目及作者与这些厂商没有任何隶属、授权或合作关系，
-也不对其服务质量作任何判断。
+Promotion into core needs all of: eligible under the placement rule; `stable` in contrib for at least one minor release cycle; a live `tools/conformance` run for each of its formats passed within the last 30 days; no shim-caused bug fix in the last 4 weeks and no open bug; registration and transform tests here and a docs entry; a reviewed PR. Evidence of real use is advisory.
 
-**风险自负。** 特别提醒：
+Demotion back to contrib needs any one of: the vendor changes its auth so it is no longer a plain API key; a conformance failure stays unfixed for one minor cycle; no evidence of use and no maintainer for two minor cycles.
 
-- **这里不保证零数据保留（ZDR）。** 免费额度恰恰是最可能保留 prompt、为风控留痕、
-  或用于改进产品的档位。若 ZDR、数据驻留、DPA 或分处理者清单对你重要，请自行阅读
-  该厂商的条款与隐私政策后判断。shim 写着 `keyless`，只说明接口不要求密钥，
-  不说明上游如何处理你的数据。
-- **条款、模型清单与速率限制归上游所有**，可能随时变更或关闭。昨天可用的 shim
-  今天可能失败，这不是本包的缺陷。
-- **使用这些端点的任何后果，作者不承担责任** —— 包括数据丢失或泄露、费用、账号
-  封禁，或违反上游条款。
-- **合规由你负责**：你接受的条款、你与用户所在地的法律，以及你对自己用户的义务。
+## Install a vendor in the gateway
 
-若上游要求下架，对应 shim 会被撤回。
-
-</details>
-
-## Why these live outside core
-
-Free endpoints belong to their upstream. They change rate limits, rotate their
-model roster, and can close without notice. None of the four carries a contract,
-so shipping them as a standalone package lets the project withdraw or update
-them without a core release. The built-in shims are for vendors whose endpoint
-is a product you can depend on.
-
-Kilo is the one vendor that ships on both sides: the paid gateway is the
-built-in `kilo--chat_completions` (always sends `KILO_API_KEY`, offers the whole
-catalogue), and the keyless pool is `kilo_free--chat_completions` here. Keeping
-the two contracts apart is what lets the paid leaf demand a credential.
-
-## Rate limits
-
-- **Kilo**: 200 requests per hour per IP on the free pool.
-- **LLM7**: anonymous access reaches the `turbo` models. A free token from
-  `token.llm7.io` raises the rate ceiling to 1 RPS / 60 RPM / 250 requests per
-  hour / 100,000 tokens per 24 h, and reaches the same models.
-- **OpenCode Zen**: the lane is gated to the OpenCode client's request shape;
-  see the shim's `transforms.py`.
-- **OVHcloud**: 2 requests per minute per IP per model, anonymous. A Public
-  Cloud project key raises it to 400 RPM per project per model and bills per
-  token.
-
-## What each shim fixes
-
-- **Reasoning field.** LLM7 and OVHcloud put reasoning text on
-  `message.reasoning` / `delta.reasoning`, while the Chat Completions converter
-  reads `reasoning_content`. Both ship a rename, a no-op when no reasoning is
-  present. Kilo's free lane carries no rename: its reasoning field has not been
-  probed, and an unverified rename is worse than none.
-- **Model roster.** Kilo's and OpenCode's catalogs list the paid models beside
-  the free ones; their `model_list_transform`s keep only the free slice. LLM7's
-  catalog is typed and tiered, so its transform keeps `model_type: chat` in the
-  `turbo` tier. OVHcloud's listing carries no type field and is offered whole.
-- **Request shape.** OpenCode's lane refuses a request that does not declare a
-  tool named exactly `read`; the shim injects a placeholder declaration and
-  removes any call to it from the response.
-
-## Usage with the gateway
-
-Declare the source, then configure a provider for it:
+A gateway that reads manifests (Oaklight/llm-rosetta#1660 S2) takes a list of sources and a selection:
 
 ```jsonc
 {
-  "shims": { "presets": ["free"] },
+  "shims": {
+    "sources": ["contrib"],                    // catalogue ids or manifest URLs
+    "install": ["opendesign", "tag:free"]      // vendor names, tags, or "contrib:*"
+  },
   "providers": {
-    "kilo-free": { "type": "kilo_free--chat_completions" },
-    "llm7-free": { "type": "llm7--chat_completions" },
-    "ovh-free": { "type": "ovhcloud--chat_completions" }
+    "opendesign": { "type": "opendesign--chat_completions" },
+    "llm7-free": { "type": "llm7--chat_completions" }
   }
 }
 ```
 
-`keyless: true` means no `api_key` is required; supplying one switches the same
-shim to `Authorization: Bearer <key>`, which is how an operator with a paid
-OVHcloud project or an LLM7 token uses the higher limits.
+For each selected vendor the gateway installs the newest version whose `requires` matches its core (`requires.surface == SURFACE_VERSION`, `requires.ir <= IR_VERSION`), pinned by the archive's sha256, and upgrades only when a newer compatible version is published. When core already registers a shim name, core wins and the gateway logs the source it ignored. The old `"presets": ["free"]` and `"presets": ["opendesign"]` keys map to `contrib` with `tag:free` and `opendesign`, so no config edit is needed.
 
-## Privacy
+The manifest is published on the `dist` branch:
 
-Every endpoint here is a third-party service, and free tiers may log prompts.
-Never send secrets or personal data through them.
+- `https://cdn.jsdelivr.net/gh/Oaklight/llm-rosetta-shim-contrib@dist/manifest.json` (default)
+- `https://raw.githubusercontent.com/Oaklight/llm-rosetta-shim-contrib/dist/manifest.json` (fallback)
+
+Installing the Python distribution also works: `pip install llm-rosetta-shim-contrib` registers every vendor through one `llm_rosetta.shim_providers` entry point per vendor. Core calls each entry point separately, so a vendor that fails to load is logged and the others still register.
+
+## Layout
+
+```
+src/llm_rosetta_shim_contrib/
+  __init__.py            register_vendor(), vendor_names(); imports llm_rosetta.contracts only
+  vendors.py             the entry-point callables, one per vendor directory
+  providers/
+    shims.yaml           every shim and its directory (checked against the leaves)
+    <vendor>/
+      provider.yaml      vendor manifest (connection defaults, logo)
+      auth.py, quota.py  optional sidecars
+      llm/[<format>/]provider.yaml, transforms.py
+tests/<vendor>/          the vendor's own tests
+vendors.toml             release metadata per vendor: version, maturity, since, tags
+tests/*.py               layout, free-tier rules, manifest producer, collision check
+scripts/build_shim_archive.py, scripts/build_manifest.py
+scripts/check_core_collisions.py
+```
+
+Package code imports core only through `llm_rosetta.contracts`: core runs the entry points and loads the sidecars during `import llm_rosetta`, when `llm_rosetta.api` cannot be imported yet. Tests use `llm_rosetta.api`. `tests/test_layout.py` enforces both.
+
+### Add a vendor
+
+1. Copy the vendor directory to `src/llm_rosetta_shim_contrib/providers/<vendor>/`. Every leaf must be named `<vendor>--<name>` (a new vendor uses the format as `<name>`) or, for a vendor moved from core, the name core gave it, which may be the bare vendor key.
+2. Add a `[vendors.<vendor>]` table to `vendors.toml` (`version`, `maturity`, `since`, `tags`; optional `conformance`, `requires`, `promoted_to`).
+3. Add one line to `[project.entry-points."llm_rosetta.shim_providers"]` in `pyproject.toml`: `<vendor> = "llm_rosetta_shim_contrib.vendors:<vendor>"`.
+4. Move its tests to `tests/<vendor>/`.
+5. Add its leaves to `src/llm_rosetta_shim_contrib/providers/shims.yaml`, then run `pytest` and `python scripts/build_manifest.py --dry-run`.
+
+## Versions and releases
+
+Each vendor has its own version, in its `[vendors.<vendor>]` table of the repository-root `vendors.toml`, together with its maturity, `since` date and tags; the top-level `[requires]` table sets the `{surface, ir}` floor. The metadata is kept out of the vendor's `provider.yaml` for two reasons: core's loader refuses keys it does not know in a vendor manifest, and a version inside the archive would change the archive's bytes on every metadata edit. Bump a vendor's version whenever anything under its directory changes. The argonne repository uses the same file and the same builder scripts, so both publish one format.
+
+A `v*` tag (equal to the package `__version__`) runs `.github/workflows/release.yml`, which runs `scripts/build_manifest.py --out <dist checkout> --previous <dist>/manifest.json` and pushes:
+
+- `dist/<version>/<vendor>.tar.gz` and `.sha256`, for each vendor version not yet published. The archive root is `providers/`, holding `providers/<vendor>/…` exactly as core's loader expects and a `providers/shims.yaml` for that vendor. Archives are byte-reproducible.
+- `dist/<release>/manifest.json` (immutable) and `dist/manifest.json` (latest).
+
+Published versions are append-only: a vendor whose version is already published keeps its record, and the build fails if its archive changed without a version bump. CI runs the same build as a dry run on every push and pull request, against the manifest already on `dist`. The release also attaches the new archives and the release manifest to a GitHub Release for the tag.
+
+A manifest record:
+
+```json
+{
+  "version": "0.3.0",
+  "commit": "<40-hex>",
+  "archive": "0.3.0/opendesign.tar.gz",
+  "sha256": "<64-hex>",
+  "requires": {"surface": 1, "ir": 1},
+  "shims": ["opendesign--chat_completions", "opendesign--messages", "opendesign--open_responses"],
+  "tags": ["tier:subscription", "auth:device"],
+  "maturity": "beta",
+  "since": "2026-11-14",
+  "conformance": {"date": null, "result": "none"},
+  "promoted_to": null
+}
+```
+
+## Development
+
+```bash
+python -m venv .venv
+. .venv/bin/activate
+pip install "llm-rosetta @ git+https://github.com/Oaklight/llm-rosetta.git@master#subdirectory=packages/llm-rosetta"
+pip install . pytest pyyaml
+pytest
+python scripts/build_shim_archive.py         # archive layout check
+python scripts/build_manifest.py --dry-run   # build and validate, print the manifest
+python scripts/check_core_collisions.py
+```
+
+Requires Python >= 3.10 and `llm-rosetta >= 0.14.0.dev35` (the first core with `llm_rosetta.contracts`). The manifest builder needs Python 3.11+ (`tomllib`).
 
 ## License
 

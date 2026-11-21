@@ -1,0 +1,48 @@
+# OpenCode — paid access gateway (OpenAI Chat Completions endpoint).
+#
+# OpenCode exposes two paid lanes that share one credential and differ only by
+# base URL: Go (monthly subscription) at /zen/go/v1, and Zen (pay-as-you-go
+# account balance) at /zen/v1.  This shim defaults to the Go lane; set
+# ``base_url: https://opencode.ai/zen/v1`` in the provider config to use Zen.
+#
+# The Go lane requires a stable ``x-opencode-session`` on every inference
+# request (a missing one is a 400); the gateway derives a per-conversation
+# value.  Zen ignores the header.
+name: opencode--chat_completions
+model_type: llm
+format: chat_completions
+logo: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/opencode.svg
+hint_msg:
+  en: 'For the Zen balance lane set Base URL to https://opencode.ai/zen/v1 — the default is the Go subscription lane, and one API key signs both. The keyless free pool ships as its own package — declare shims.presets: ["opencode_zen_free"] to load opencode_zen_free--chat_completions.'
+  zh: '默认走 Go 订阅 lane。Zen 余额 lane 请把 Base URL 改为 https://opencode.ai/zen/v1，两者共用同一个 API Key。无密钥免费池是独立包：声明 shims.presets: ["opencode_zen_free"] 后即可加载 opencode_zen_free--chat_completions。'
+
+# Subscription windows are read from the Go lane's usage endpoint.  The probe
+# lives in the gateway (`gateway/quota/probes.py`); the shim only names it.
+quota:
+  probe: opencode_go
+  # Refresh the windows in the background so routing learns a reset
+  # without waiting for a request to fail.
+  interval: 300
+
+reasoning:
+  # Kept equal to the Chat Completions base capability
+  # (``converters/base/helpers/reasoning.py::_DEFAULT_CHAT_COMPLETIONS``): a
+  # provider-level ``reasoning:`` section supplies the loader's defaults for
+  # every field it omits, and the base cap clamps effort to [minimal, high].
+  # Declaring both keeps the wire unchanged for the non-DeepSeek models this
+  # shim also serves.
+  effort_field: reasoning_effort
+  effort_range: [minimal, high]
+  model_overrides:
+    # DeepSeek's thinking mode rejects a replayed history whose assistant
+    # turns omit ``reasoning_content`` once tools are in play.  The OpenCode
+    # front door accepts the body and relays it to DeepSeek, so the 400
+    # surfaces intermittently on whichever backend enforces the rule.
+    # Declared on the model *family*, not on the whole shim: this shim also
+    # fronts Claude, GPT and Gemini models.  Keys are exact upstream IDs
+    # first, then glob patterns in declaration order, so a new DeepSeek
+    # snapshot is covered without touching this file.  The pattern has no
+    # hyphen so it also matches vendor-prefixed IDs (deepseek/deepseek-v3).
+    # See #948, epic #1143.
+    "deepseek*":
+      replay_missing: fill_empty

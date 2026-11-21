@@ -1,0 +1,32 @@
+# Open Design Cloud — the model gateway and the account control plane.
+#
+# Model traffic goes to the model plane (https://amr-link.open-design.ai/v1)
+# with the runtime key (sk-amr-…). Account and Coding Plan reads live on a
+# separate control plane (https://amr-api.open-design.ai) and need the control
+# key (vela_ctrl_…), which the web UI never shows. Both keys come from the
+# device sign-in this vendor ships in auth.py; the allowance reader beside it
+# (quota.py) knows how to read them.
+#
+# There is deliberately no api_key_env here: auth.py owns the credential slot,
+# and the loader refuses a static api_key beside an exchange it does not take
+# as input. Inheriting an environment default would only advertise a source
+# the gateway cannot use.
+#
+# The mark is vendored into assets/ and served from the repository, so the
+# admin panel never fetches a third-party host.
+logo: https://cdn.jsdelivr.net/gh/Oaklight/llm-rosetta-shim-opendesign@main/assets/opendesign.svg
+
+connection:
+  base_url: https://amr-link.open-design.ai/v1
+  models_path: https://amr-link.open-design.ai/v1/models
+  manage_usage_url: https://open-design.ai/cloud/usage
+
+# The Coding Plan allowance is read on the control plane with the second
+# credential the sign-in stores.  The probe declares that role, so the gateway
+# marks its reading advisory: shown on the panel, never a demotion.
+#
+# The `quota:` block sits on each leaf rather than here: a core older than the
+# manifest's `quota:` key refuses this file outright, and the package has to
+# keep loading there (the probe then reports "no keyed endpoint").  When the
+# dependency floor moves to a dev that carries the key, the block can come up
+# to the manifest, where an account-level fact belongs.

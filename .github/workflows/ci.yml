@@ -2,8 +2,13 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, next]
   pull_request:
+
+env:
+  # The core is a two-package monorepo; without the subdirectory pip clones the
+  # repository root and finds no project there.
+  CORE: "llm-rosetta @ git+https://github.com/Oaklight/llm-rosetta.git@master#subdirectory=packages/llm-rosetta"
 
 jobs:
   test:
@@ -22,23 +27,74 @@ jobs:
           # The parent's test-fixture submodule is addressed as git@github.com:;
           # rewrite it to HTTPS, which the runner can clone without a key.
           git config --global url."https://github.com/".insteadOf "git@github.com:"
-          # The parent is a two-package monorepo: without the subdirectory pip
-          # clones the repository root and finds no project there.
-          pip install "llm-rosetta @ git+https://github.com/Oaklight/llm-rosetta.git@master#subdirectory=packages/llm-rosetta"
+          pip install "$CORE"
       - name: Install the shim package
-        run: pip install -e . pytest pyyaml
+        # Not editable: the tests run against what a wheel ships (entry points,
+        # package data), and the floor (a development core) may not be on
+        # PyPI, so core comes from git master above and --no-deps keeps pip
+        # from resolving it again.
+        run: |
+          pip install --no-deps .
+          pip install pytest pyyaml
       - name: Run tests
         run: pytest tests -q
 
-  archive:
+  manifest:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # The archive is what a mirror serves, and one that extracts to a shape
-      # the package does not ship is worse than no mirror.  The build needs no
-      # dependency, so it runs before and apart from the test matrix.
-      - name: Check the release archive layout
+      # The archives and the manifest are what a gateway installs from, so the
+      # release builder runs here in dry-run on every change.  It needs no
+      # dependency, so it runs before anything is installed.
+      - name: Check the per-vendor archive layout
         run: python scripts/build_shim_archive.py
+      - name: Build the manifest (dry run) and validate it against the spec
+        run: |
+          set -euo pipefail
+          # Against the manifest already on `dist`, a vendor whose archive
+          # changed without a version bump fails here, before the tag does.
+          args=()
+          if git fetch -q origin dist && git cat-file -e FETCH_HEAD:manifest.json 2>/dev/null; then
+            git show FETCH_HEAD:manifest.json > "$RUNNER_TEMP/previous.json"
+            args+=(--previous "$RUNNER_TEMP/previous.json")
+          fi
+          python scripts/build_manifest.py --dry-run "${args[@]}" > manifest.json
+          python scripts/build_manifest.py --check manifest.json
+      - name: Validate against core's schema
+        # Core ships the manifest schema as
+        # llm_rosetta/contracts/shim_manifest.schema.json (since
+        # Oaklight/llm-rosetta#1662), and this package's floor is a core that
+        # has it, so a missing schema fails the step rather than skipping it.
+        run: |
+          set -euo pipefail
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          pip install jsonschema "$CORE"
+          python - <<'PY'
+          import json
+          from importlib.resources import files
+
+          import jsonschema
+
+          schema = files("llm_rosetta.contracts").joinpath("shim_manifest.schema.json")
+          jsonschema.validate(json.load(open("manifest.json")), json.loads(schema.read_text()))
+          print("manifest.json validates against core's schema")
+          PY
+
+  collisions:
+    # Shim names do not change when a vendor moves between core and contrib,
+    # so contrib must never ship a name core's built-ins already register.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install llm-rosetta (master)
+        run: |
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          pip install "$CORE"
+      - name: Check contrib's shim names against core's
+        run: python scripts/check_core_collisions.py

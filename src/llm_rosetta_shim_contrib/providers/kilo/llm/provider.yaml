@@ -1,0 +1,19 @@
+# Kilo — paid gateway (OpenAI Chat Completions endpoint).
+#
+# The keyless free pool is a different shim: ``kilo_free--chat_completions``,
+# published in llm-rosetta-shim-free.  Declaring
+# ``shims.presets: ["free"]`` loads it next to this one.  Splitting them keeps
+# the two contracts apart — this lane always sends a credential and offers the
+# whole catalogue, that one sends none and offers only the models the upstream
+# marks free.
+name: kilo--chat_completions
+model_type: llm
+format: chat_completions
+# `group_label` titles the vendor's top level in the admin picker; with no
+# `group` the key is still derived from the name (`kilo`).  The shim's own
+# label is left unset, so its row reads as the bare base format.
+group_label: Kilo
+logo: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/kilocode.svg
+
+connection:
+  base_url: https://api.kilo.ai/api/gateway

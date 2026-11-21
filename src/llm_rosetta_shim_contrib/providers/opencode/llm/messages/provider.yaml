@@ -1,0 +1,40 @@
+# OpenCode — paid access gateway (Anthropic Messages endpoint).
+#
+# Serves the Claude / MiniMax / Qwen models that OpenCode routes through
+# /messages.  Shares the credential and lanes described in the sibling
+# chat_completions shim; Zen is a base_url override.
+name: opencode--messages
+model_type: llm
+format: messages
+logo: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/opencode.svg
+hint_msg:
+  en: 'For the Zen balance lane set Base URL to https://opencode.ai/zen/v1 — the default is the Go subscription lane, and one API key signs both. The keyless free pool ships as its own package — declare shims.presets: ["opencode_zen_free"] to load opencode_zen_free--chat_completions.'
+  zh: '默认走 Go 订阅 lane。Zen 余额 lane 请把 Base URL 改为 https://opencode.ai/zen/v1，两者共用同一个 API Key。无密钥免费池是独立包：声明 shims.presets: ["opencode_zen_free"] 后即可加载 opencode_zen_free--chat_completions。'
+
+# Subscription windows are read from the Go lane's usage endpoint.  The probe
+# lives in the gateway (`gateway/quota/probes.py`); the shim only names it.
+quota:
+  probe: opencode_go
+  # Refresh the windows in the background so routing learns a reset
+  # without waiting for a request to fail.
+  interval: 300
+
+# The Messages lane fronts Claude and rejects an unsigned thinking block the
+# same way Anthropic does; the Go lane's credential is sent as `x-api-key`
+# (see `anthropic_auth`), not as a bearer token.
+# Probed live 2026-10-13: `messages.1.content.0.thinking.signature: Field
+# required`.  See #954.
+# Fields spelled out rather than left to the loader default: a provider with no
+# `reasoning:` section falls back to the Messages base cap
+# (`converters/base/helpers/reasoning.py::_DEFAULT_ANTHROPIC`), but as soon as a
+# section exists every field it omits comes from the loader's hard-coded
+# defaults instead — `effort_field` would become the flat `reasoning_effort`,
+# which is not an Anthropic Messages field.  Keep these equal to that base cap.
+reasoning:
+  thinking_modes:
+    auto: adaptive
+    enabled: enabled
+    disabled: disabled
+  effort_field: output_config.effort
+  effort_range: [low, max]
+  unsigned_blocks: preserve

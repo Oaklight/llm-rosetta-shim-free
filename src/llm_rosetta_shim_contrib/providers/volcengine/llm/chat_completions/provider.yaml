@@ -1,0 +1,13 @@
+name: volcengine--chat_completions
+model_type: llm
+format: chat_completions
+logo: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/volcengine.svg
+
+# Domestic (China mainland) endpoint; international: ark.ap-southeast.bytepluses.com/api/v3
+reasoning:
+  thinking_modes:
+    auto: auto
+    enabled: enabled
+    disabled: disabled
+  effort_field: reasoning_effort
+  effort_range: [minimal, max]

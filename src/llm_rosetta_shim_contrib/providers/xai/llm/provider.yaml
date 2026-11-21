@@ -1,0 +1,10 @@
+name: xai
+model_type: llm
+format: chat_completions
+logo: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/xai.svg
+
+connection:
+  base_url: https://api.x.ai/v1
+reasoning:
+  effort_field: reasoning_effort
+  effort_range: [minimal, xhigh]

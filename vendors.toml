@@ -1,0 +1,195 @@
+# Release metadata for each vendor this repository publishes: the single place
+# a vendor's version, maturity and tags are set.  scripts/build_manifest.py
+# reads it at a release tag and writes one manifest record per vendor whose
+# archive changed (Oaklight/llm-rosetta#1660; the shim manifest v1 spec).
+#
+# It lives here, not in the vendor's provider.yaml, because it describes a
+# release rather than how a shim loads: core's loader refuses an unknown key
+# in a vendor manifest, and a version field inside the archive would change
+# the archive's bytes for every metadata edit.
+#
+# Rules the builder enforces:
+# - every vendor directory under src/llm_rosetta_shim_contrib/providers has a
+#   table here, and every table names a vendor directory;
+# - a vendor whose archive bytes changed since the last published record
+#   needs a new `version`; an unchanged archive keeps its record untouched;
+# - `requires` is the oldest contracts surface and IR the vendor needs
+#   (`llm_rosetta.contracts.SURFACE_VERSION` / `IR_VERSION`).
+#
+# Maturity (README, "Maturity ladder"): `beta` means tests plus one live
+# verification; `since` is the date of that verification, recorded beside the
+# shim.  No vendor has a tools/conformance run yet, so `conformance` is left
+# out and the record says {"date": null, "result": "none"}.
+
+[requires]
+surface = 1
+ir = 1
+
+# Free tier: keyless pools, live-checked 2026-11-13 ("Measured" in each leaf).
+[vendors.kilo_free]
+version = "0.4.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:free"]
+
+[vendors.llm7]
+version = "0.4.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:free"]
+
+# The lane's client gate was measured live on 2026-10-16 (llm/transforms.py, #884).
+[vendors.opencode_zen_free]
+version = "0.4.0"
+maturity = "beta"
+since = "2026-10-16"
+tags = ["tier:free"]
+
+[vendors.ovhcloud]
+version = "0.4.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:free"]
+
+# Open Design Cloud: model access is the Coding Plan subscription; the
+# credential comes from the vendor's device-authorization sign-in (auth.py,
+# core reports auth.kind == "device").  Live check: docs/vendors/opendesign.md.
+[vendors.opendesign]
+version = "0.3.0"
+maturity = "beta"
+since = "2026-11-14"
+tags = ["tier:subscription", "auth:device"]
+
+# ---------------------------------------------------------------------------
+# Moved out of llm-rosetta core (Oaklight/llm-rosetta#1660 S7).  The trees are
+# copied unchanged from core master 0585e6010b, so every shim keeps its name.
+#
+# `tier:paid` here means "needs a keyed account"; some of these accounts carry
+# a free allowance (groq, nvidia, modelscope), but `tier:free` is kept for the
+# keyless pools above, which the legacy `free` preset selects.
+# `region:cn` marks a vendor whose default endpoint is the mainland-China one.
+#
+# Permanently in contrib (aggregators, subscription and sign-in lanes).  Each
+# is `beta`: core's tests come with it, and `since` is the latest dated live
+# record in the vendor's own files unless the comment says otherwise.
+
+# Go (monthly subscription) and Zen (account balance) share one key; the Go
+# allowance probe is quota.py.  Probed live 2026-10-13 (llm/messages); about
+# 99k production requests 2026-10-11..2026-11-21 (#1660 usage evidence).
+[vendors.opencode]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-10-13"
+tags = ["tier:subscription", "tier:paid"]
+
+# Sign in with ChatGPT: auth.py is an OAuth exchange (auth.kind == "oauth").
+# quota.py carries the in-band `openai_codex` probe the leaf names.  No dated
+# live record in the tree; 125 production requests 2026-10-11..2026-11-21
+# (#1660 usage evidence), read on 2026-11-21.
+[vendors.openai_chatgpt]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-21"
+tags = ["tier:subscription", "auth:oauth"]
+
+# Drives the local `agy` CLI over ACP; agy holds the Google sign-in, so the
+# gateway sends no credential (keyless).  The strict-profile measures were
+# made against agy 1.5.13 (core commit of 2026-11-19); never configured on the
+# production gateway.
+[vendors.antigravity]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-19"
+tags = ["tier:subscription", "auth:cli"]
+
+# The paid gateway (the keyless pool is kilo_free).  No dated live record in
+# the tree; production requests 2026-10-11..2026-11-21 (#1660 usage evidence).
+[vendors.kilo]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-21"
+tags = ["tier:paid"]
+
+# Measured live 2026-11-19 (llm/open_responses).
+[vendors.openrouter]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-19"
+tags = ["tier:paid"]
+
+# Measured 2026-11-13: /models answers 401 without a key; chat itself has not
+# been probed (llm/transforms.py).
+[vendors.groq]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:paid"]
+
+# Measured 2026-11-13: /v1/models answers 200 (83 entries).
+[vendors.nvidia]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:paid"]
+
+# Measured 2026-11-13: chat, embeddings and rerank answer 200.
+[vendors.siliconflow]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:paid", "region:cn"]
+
+# Measured 2026-11-13: /v1/models answers 200 (38 entries).
+[vendors.modelscope]
+version = "0.5.0"
+maturity = "beta"
+since = "2026-11-13"
+tags = ["tier:paid", "region:cn"]
+
+# Model makers' own APIs with a static key: `stable` and eligible for
+# promotion into core (#1660 "Placement"); `since` is the placement decision.
+# zhipu, xai, qwen and moonshot keep their bare chat shim names (`zhipu`,
+# `xai`, `qwen`, `moonshot`): a manifest shim name is the vendor key,
+# `<vendor>--<name>` or `<vendor>_<lane>--<name>`, owned by the longest vendor
+# key of this manifest it matches (core's manifest rule, #1660 S7).
+# minimax stays in core as the reference vendor of its embeddings format.
+
+# Zhipu AI's mainland platform (open.bigmodel.cn); zai is the international one.
+[vendors.zhipu]
+version = "0.5.0"
+maturity = "stable"
+since = "2026-11-21"
+tags = ["tier:paid", "region:cn"]
+
+# Zhipu AI's international platform (api.z.ai); zhipu is the mainland one.
+[vendors.zai]
+version = "0.5.0"
+maturity = "stable"
+since = "2026-11-21"
+tags = ["tier:paid"]
+
+[vendors.volcengine]
+version = "0.5.0"
+maturity = "stable"
+since = "2026-11-21"
+tags = ["tier:paid", "region:cn"]
+
+[vendors.xai]
+version = "0.5.0"
+maturity = "stable"
+since = "2026-11-21"
+tags = ["tier:paid"]
+
+# DashScope compatible mode, mainland endpoint by default.
+[vendors.qwen]
+version = "0.5.0"
+maturity = "stable"
+since = "2026-11-21"
+tags = ["tier:paid", "region:cn"]
+
+# api.moonshot.cn by default (api.moonshot.ai is the international host).
+[vendors.moonshot]
+version = "0.5.0"
+maturity = "stable"
+since = "2026-11-21"
+tags = ["tier:paid", "region:cn"]

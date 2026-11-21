@@ -1,0 +1,33 @@
+# Google Antigravity — through the vendor's own CLI, over ACP.
+#
+# The lane does not call Google's Code Assist API.  It runs the local
+# ``agy`` CLI (``agy acp``) and speaks the Agent Client Protocol to it, so
+# the Google sign-in, the access token and the project stay with agy, exactly
+# as they do when agy is used on its own.
+#
+# Why not call Code Assist directly: Google suspends accounts it sees calling
+# Code Assist outside Antigravity's own client.  Driving the vendor's CLI
+# keeps the request inside the client Google expects.
+#
+# Phase 1 runs agy as a text model: none of agy's own tools (file read and
+# write, shell, web search, scheduling, sub-agents, workflows) is available.
+# agy is an upstream here, not the gateway's client, and must not run a tool
+# on the gateway host for an API request.  agy has no single switch for that,
+# so the gateway starts it in a profile it owns (``agy acp --gemini-dir
+# <data_dir>/acp/<provider>``) and layers four measures (agy 1.5.13): a custom
+# agent with no tools, a deny-all PreToolUse hook, ``toolPermission: strict``
+# in the profile's settings, and its own ACP client, which refuses every
+# permission request and stops a turn at the first tool frame (HTTP 502).  The
+# gateway re-asserts the profile before every turn.  Not measured: tools with
+# lasting or outward effects (schedule, swarm, run_workflow, sub-agents,
+# send_message) were not run; they are blocked by the same layers.  A provider
+# entry that overrides ``acp_argv`` gets none of this and can re-enable the
+# tools, at the operator's own risk.
+group_label: Google (Antigravity)
+logo: https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/antigravity.svg
+
+connection:
+  # This lane sends no credential: agy authenticates itself and the gateway
+  # never sees the token.  Declared here because a credential fact belongs to
+  # the vendor manifest, not to a leaf.
+  keyless: true

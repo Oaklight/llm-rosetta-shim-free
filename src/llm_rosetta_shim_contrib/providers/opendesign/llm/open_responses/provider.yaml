@@ -1,0 +1,11 @@
+# Open Design Cloud — OpenAI Responses endpoint.
+name: opendesign--open_responses
+model_type: llm
+format: open_responses
+hint_msg:
+  en: "Open Design Cloud model gateway. Sign in once with the device flow; the runtime key it issues (sk-amr) is sent as a Bearer token. The Coding Plan card reads the allowance on the control plane with the control key the same sign-in stores."
+  zh: "Open Design Cloud 模型网关。请先用设备授权流程登录一次；签发的运行时 Key（sk-amr）会以 Bearer 形式发送。Coding Plan 额度卡片会用同一次登录保存的控制 Key 在控制面读取额度。"
+
+quota:
+  probe: opendesign
+  url: https://amr-api.open-design.ai

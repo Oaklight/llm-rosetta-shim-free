@@ -1,0 +1,11 @@
+# Open Design Cloud — Anthropic Messages endpoint.
+name: opendesign--messages
+model_type: llm
+format: messages
+hint_msg:
+  en: "Open Design Cloud model gateway. Sign in once with the device flow; the Messages endpoint receives the runtime key (sk-amr) as x-api-key with anthropic-version: 2023-06-01. The Coding Plan card reads the allowance on the control plane with the control key the same sign-in stores."
+  zh: "Open Design Cloud 模型网关。请先用设备授权流程登录一次；Messages 端点会以 x-api-key 接收运行时 Key（sk-amr），并附带 anthropic-version: 2023-06-01。Coding Plan 额度卡片会用同一次登录保存的控制 Key 在控制面读取额度。"
+
+quota:
+  probe: opendesign
+  url: https://amr-api.open-design.ai
