@@ -2,8 +2,90 @@
   "manifest_version": 1,
   "source": "contrib",
   "repo": "https://github.com/Oaklight/llm-rosetta-shim-contrib",
-  "generated_at": "2026-11-21T11:59:52Z",
+  "generated_at": "2026-11-21T16:19:34Z",
   "vendors": {
+    "antigravity": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/antigravity.tar.gz",
+          "sha256": "2a12a4e165076c3f3b523feaaf4bbcedc8a3578f1f27b904c0ddd7d46d1b8dc6",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "antigravity--acp"
+          ],
+          "tags": [
+            "tier:subscription",
+            "auth:cli"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-19",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "groq": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/groq.tar.gz",
+          "sha256": "a015f96619cd98a73513955b8d7a4a8acb65cb823e984070ff0bdb07937ccc63",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "groq--chat_completions"
+          ],
+          "tags": [
+            "tier:paid"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-13",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "kilo": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/kilo.tar.gz",
+          "sha256": "d2a17a52febae064fdc598257c1ced7aef55b43332145395485b72eff596c71e",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "kilo--chat_completions"
+          ],
+          "tags": [
+            "tier:paid"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
     "kilo_free": {
       "versions": [
         {
@@ -50,6 +132,147 @@
           ],
           "maturity": "beta",
           "since": "2026-11-13",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "modelscope": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/modelscope.tar.gz",
+          "sha256": "db5164619a38ffd5d554c53b220a0d401170ccb4609a5024b3159466a620a4ce",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "modelscope--chat_completions"
+          ],
+          "tags": [
+            "tier:paid",
+            "region:cn"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-13",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "moonshot": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/moonshot.tar.gz",
+          "sha256": "875f4eb09a3fcde97ff644ed3b9875fd154fc46464f51dce9cc43d7a380b9d51",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "moonshot"
+          ],
+          "tags": [
+            "tier:paid",
+            "region:cn"
+          ],
+          "maturity": "stable",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "nvidia": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/nvidia.tar.gz",
+          "sha256": "c3e25db09f091961edf4ea1ad751fa35fd9adbc6ea3e5979aa0c1efc59a9ca68",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "nvidia--chat_completions"
+          ],
+          "tags": [
+            "tier:paid"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-13",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "openai_chatgpt": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/openai_chatgpt.tar.gz",
+          "sha256": "0f5546dc123d70897472342f70ffa61986112dbc87549e53a5b7b938855277e4",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "openai_chatgpt--open_responses"
+          ],
+          "tags": [
+            "tier:subscription",
+            "auth:oauth"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "opencode": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/opencode.tar.gz",
+          "sha256": "d0557ccd09cc263ec3934d847749c396163e3dd5d014a23a5339b74d2caab6f5",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "opencode--chat_completions",
+            "opencode--messages",
+            "opencode--open_responses"
+          ],
+          "tags": [
+            "tier:subscription",
+            "tier:paid"
+          ],
+          "maturity": "beta",
+          "since": "2026-10-13",
           "conformance": {
             "date": null,
             "result": "none"
@@ -115,6 +338,36 @@
         }
       ]
     },
+    "openrouter": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/openrouter.tar.gz",
+          "sha256": "7d64d978a7a81e256cd4cec8448f0e24d28d11e48379003b5311cacf9820f903",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "openrouter--chat_completions",
+            "openrouter--messages",
+            "openrouter--open_responses",
+            "openrouter--rerank"
+          ],
+          "tags": [
+            "tier:paid"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-19",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
     "ovhcloud": {
       "versions": [
         {
@@ -134,6 +387,181 @@
           ],
           "maturity": "beta",
           "since": "2026-11-13",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "qwen": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/qwen.tar.gz",
+          "sha256": "58aae7b839b79aebe3c5921eafcc739c24a26497fe63c049e878fe7d09388318",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "qwen"
+          ],
+          "tags": [
+            "tier:paid",
+            "region:cn"
+          ],
+          "maturity": "stable",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "siliconflow": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/siliconflow.tar.gz",
+          "sha256": "5631f7f8a434f6f28922f4bde68dc305c7401b5d0c2cc4cbd05817c727cbf375",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "siliconflow--embedding",
+            "siliconflow--chat_completions",
+            "siliconflow--rerank"
+          ],
+          "tags": [
+            "tier:paid",
+            "region:cn"
+          ],
+          "maturity": "beta",
+          "since": "2026-11-13",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "volcengine": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/volcengine.tar.gz",
+          "sha256": "3e66c17741bb9601ac002af5317f6f6ba761682f1c888e82d3e32086931f02ac",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "volcengine--embedding",
+            "volcengine--chat_completions",
+            "volcengine--open_responses"
+          ],
+          "tags": [
+            "tier:paid",
+            "region:cn"
+          ],
+          "maturity": "stable",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "xai": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/xai.tar.gz",
+          "sha256": "0300a29c09491fc41ee2ed396770c813d268dec45646525d8be1aa539dbca194",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "xai"
+          ],
+          "tags": [
+            "tier:paid"
+          ],
+          "maturity": "stable",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "zai": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/zai.tar.gz",
+          "sha256": "f9d63c8f51f96a173517e8ae3f4af615c7344ec224c3e9e5a135ca50d5b2dbf6",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "zai--embedding",
+            "zai--chat_completions",
+            "zai--messages",
+            "zai--rerank"
+          ],
+          "tags": [
+            "tier:paid"
+          ],
+          "maturity": "stable",
+          "since": "2026-11-21",
+          "conformance": {
+            "date": null,
+            "result": "none"
+          },
+          "promoted_to": null
+        }
+      ]
+    },
+    "zhipu": {
+      "versions": [
+        {
+          "version": "0.5.0",
+          "commit": "034badfbe7bc8ce75762e49891705680533d46d5",
+          "archive": "0.5.0/zhipu.tar.gz",
+          "sha256": "7115e282689f8f61c74303ce4f51869b954ae9436193c20b0269455c0a3f7955",
+          "requires": {
+            "surface": 1,
+            "ir": 1
+          },
+          "shims": [
+            "zhipu--embedding",
+            "zhipu",
+            "zhipu--rerank"
+          ],
+          "tags": [
+            "tier:paid",
+            "region:cn"
+          ],
+          "maturity": "stable",
+          "since": "2026-11-21",
           "conformance": {
             "date": null,
             "result": "none"
